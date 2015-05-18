@@ -14,8 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"bosun.org/cmd/scollector/collectors"
-	"bosun.org/collect"
+	"github.com/dblezek/pcollector/collect"
+	"github.com/dblezek/pcollector/collectors"
+
 	"bosun.org/metadata"
 	"bosun.org/opentsdb"
 	"bosun.org/slog"
