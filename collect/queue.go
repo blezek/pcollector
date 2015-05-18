@@ -90,8 +90,8 @@ func sendPRTG(batch []Result) {
 func pushToPRTGServer() {
 	log.Printf("pushToPRTGServer")
 	prtg := PRTG{Results: make([]Result, 0)}
-	for key, value := range prtgResults {
-		prtg.Results = append(prtg.Results, Result{key, value})
+	for _, value := range prtgResults {
+		prtg.Results = append(prtg.Results, value)
 	}
 	x, err := xml.MarshalIndent(prtg, "", "  ")
 	if err != nil {
@@ -101,8 +101,7 @@ func pushToPRTGServer() {
 	xx := xml.Header + string(x)
 	log.Printf("Sending %v to PRTG\n\n%v\n\n", len(prtg.Results), xx)
 
-	prtgURL = "http://prtg.mayo.edu:5050/collector.dewey-integration.mayo.edu"
-	req, err := http.NewRequest("POST", prtgURL, bytes.NewBuffer([]byte(xx)))
+	req, err := http.NewRequest("POST", prtgURL.String(), bytes.NewBuffer([]byte(xx)))
 	if err != nil {
 		slog.Error(err)
 		return

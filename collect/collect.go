@@ -24,6 +24,7 @@ import (
 type Result struct {
 	Channel string  `xml:"channel"`
 	Value   float64 `xml:"value"`
+	Float   int     `xml:"float"`
 }
 type PRTG struct {
 	XMLName xml.Name `xml:"prtg"`
@@ -62,12 +63,12 @@ var (
 
 	tchan               chan *opentsdb.DataPoint
 	tsdbURL             string
-	prtgURL             string
+	prtgURL             *url.URL
 	osHostname          string
 	metricRoot          string
 	queue               []json.RawMessage
 	prtgQueue           []Result
-	prtgResults         = make(map[string]float64)
+	prtgResults         = make(map[string]Result)
 	qlock, mlock, slock sync.Mutex // Locks for queues, maps, stats.
 	counters            = make(map[string]*addMetric)
 	sets                = make(map[string]*setMetric)
@@ -121,6 +122,7 @@ func InitChan(tsdbhost *url.URL, root string, ch chan *opentsdb.DataPoint) error
 		u.Host = "localhost" + u.Host
 	}
 	tsdbURL = u.String()
+	prtgURL = tsdbhost
 	metricRoot = root + "."
 	tchan = ch
 	go queuer()
@@ -296,13 +298,13 @@ func checkClean(s, t string) error {
 }
 
 func add(key string, v interface{}) {
-	fval, ok := v.(float64)
+	ival, ok := v.(int)
 	if ok {
-		prtgResults[key] = fval
+		prtgResults[key] = Result{key, float64(ival), 0}
 	} else {
-		ival, ok := v.(int)
+		fval, ok := v.(float64)
 		if ok {
-			prtgResults[key] = float64(ival)
+			prtgResults[key] = Result{key, fval, 1}
 		}
 	}
 }

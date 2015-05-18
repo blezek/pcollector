@@ -33,6 +33,7 @@ const (
 
 var (
 	flagFilter          = flag.String("f", "", "Filters collectors matching this term, multiple terms separated by comma. Works with all other arguments.")
+	excludeFilter       = flag.String("e", "", "Excludes collectors matching this term, multiple terms separated by comma. Works with all other arguments.")
 	flagList            = flag.Bool("l", false, "List available collectors.")
 	flagPrint           = flag.Bool("p", false, "Print to screen instead of sending to a host")
 	flagHost            = flag.String("h", "", `Bosun or OpenTSDB host. Ex: "http://bosun.example.com:8070".`)
@@ -247,7 +248,7 @@ func main() {
 	if *flagDisableDefault {
 		collect.DisableDefaultCollectors = true
 	}
-	c := collectors.Search(*flagFilter)
+	c := collectors.Search(*flagFilter, *excludeFilter)
 	if len(c) == 0 {
 		slog.Fatalf("Filter %s matches no collectors.", *flagFilter)
 	}

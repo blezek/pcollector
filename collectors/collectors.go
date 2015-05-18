@@ -96,15 +96,27 @@ func now() (t int64) {
 	return
 }
 
-// Search returns all collectors matching the pattern s.
-func Search(s string) []Collector {
+// Search returns all collectors matching the pattern s, and exclude those matching e.
+func Search(s string, e string) []Collector {
 	var r []Collector
 	for _, c := range collectors {
+		matches := false
+		excluded := false
 		for _, p := range strings.Split(s, ",") {
 			if strings.Contains(c.Name(), p) {
-				r = append(r, c)
+				matches = true
 				break
 			}
+		}
+
+		for _, p := range strings.Split(e, ",") {
+			if p != "" && strings.Contains(c.Name(), p) {
+				excluded = true
+				break
+			}
+		}
+		if matches && !excluded {
+			r = append(r, c)
 		}
 	}
 	return r
