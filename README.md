@@ -21,7 +21,7 @@ Usage of pcollector:
   -f="": Filters collectors matching this term, multiple terms separated by comma. Works with all other arguments.
   -fake=0: Generates X fake data points on the test.fake metric per second.
   -freq="15": Set the default frequency in seconds for most collectors.
-  -h="": Bosun or OpenTSDB host. Ex: "http://bosun.example.com:8070".
+  -h="": Full URL of PRTG host including api-key. Ex: "http://prtg.example.com:5050/api-key
   -hostname="": If set, use as value of host tag instead of system hostname.
   -i="": ICMP host to ping of the format: "host[,host...]".
   -l=false: List available collectors.
@@ -36,6 +36,25 @@ Usage of pcollector:
 ```
 
 The major difference from `scollector` is the addition of the `-e` flag, to exclude collectors.
+
+
+## External collectors
+
+External collectors are executables that scollector invokes, collects
+output from, and uses that like other collector data. The -c option
+specfies the external collectors directory. It should contain numbered
+directories like OpenTSDB tcollector expects. Any executable file in
+those directories is run every N seconds, where N is the name of the
+directory. Use 0 for a program that should be run continuously and
+simply pass data through to OpenTSDB (the program will be restarted if
+it exits). Data output format is:
+
+```
+metric timestamp value tag1=val1 tag2=val2 ...
+```
+
+Timestamp is in Unix format (seconds since epoch). Tags are
+optional. Stderr output is passed to scollector's log.
 
 
 
